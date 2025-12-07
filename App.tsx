@@ -67,10 +67,11 @@ const AppContent: React.FC = () => {
       <Navigation currentView={currentView} onNavigate={handleNavigate} />
       <main className="flex-grow-1 p-3 p-md-4">
         <div className="container-fluid p-0">
-          <div className="d-md-block d-none" style={{ marginLeft: '260px' }}>
-            {renderView()}
-          </div>
-          <div className="d-md-none pb-5 mb-5">
+          {/* 
+            Desktop: Add left margin for sidebar (260px)
+            Mobile: No margin, but add bottom padding for nav (80px)
+          */}
+          <div className="main-layout">
             {renderView()}
           </div>
         </div>

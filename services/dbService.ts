@@ -1,69 +1,43 @@
 
 import { DiseaseAnalysis, FarmCrop, LandAnalysisResult, UserProfile } from "../types";
 
-/**
- * MOCK MONGODB SERVICE
- * This service mimics a MongoDB Database structure using LocalStorage.
- * In a production app, these functions would be async API calls to a real MongoDB backend.
- */
-
-const DB_NAME = 'agritech_db';
-const COLLECTIONS = {
-  USERS: 'users',
-  CROPS: 'crops',
-  SCANS: 'scans',
-  LAND_REPORTS: 'land_reports'
-};
-
-// Helper to simulate network delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Helper to get collection data
-const getCollection = <T>(collectionName: string): T[] => {
-  const dbStr = localStorage.getItem(DB_NAME);
-  const db = dbStr ? JSON.parse(dbStr) : {};
-  return db[collectionName] || [];
-};
-
-// Helper to save collection data
-const saveCollection = <T>(collectionName: string, data: T[]) => {
-  const dbStr = localStorage.getItem(DB_NAME);
-  const db = dbStr ? JSON.parse(dbStr) : {};
-  db[collectionName] = data;
-  localStorage.setItem(DB_NAME, JSON.stringify(db));
-};
+const API_BASE = 'http://localhost:3000/api';
 
 export const db = {
   users: {
     async create(user: UserProfile): Promise<UserProfile> {
-      await delay(500);
-      const users = getCollection<UserProfile>(COLLECTIONS.USERS);
-      // Check if phone exists
-      if (users.find(u => u.phone === user.phone)) {
-        throw new Error("User with this phone already exists");
+      const response = await fetch(`${API_BASE}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user)
+      });
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
       }
-      users.push(user);
-      saveCollection(COLLECTIONS.USERS, users);
+      const createdUser = await response.json();
       // Set current session
-      localStorage.setItem('agritech_session_user', JSON.stringify(user));
-      return user;
+      localStorage.setItem('agritech_session_user', JSON.stringify(createdUser));
+      return createdUser;
     },
     async findOne(phone: string): Promise<UserProfile | null> {
-      await delay(500);
-      const users = getCollection<UserProfile>(COLLECTIONS.USERS);
-      return users.find(u => u.phone === phone) || null;
+      const response = await fetch(`${API_BASE}/users?phone=${phone}`);
+      if (!response.ok) throw new Error('Failed to fetch user');
+      return await response.json();
     },
     async update(user: UserProfile): Promise<UserProfile> {
-      await delay(300);
-      const users = getCollection<UserProfile>(COLLECTIONS.USERS);
-      const index = users.findIndex(u => u.id === user.id);
-      if (index !== -1) {
-        users[index] = user;
-        saveCollection(COLLECTIONS.USERS, users);
-        localStorage.setItem('agritech_session_user', JSON.stringify(user));
-        return user;
+      const response = await fetch(`${API_BASE}/users/${user.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user)
+      });
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
       }
-      throw new Error("User not found");
+      const updatedUser = await response.json();
+      localStorage.setItem('agritech_session_user', JSON.stringify(updatedUser));
+      return updatedUser;
     },
     getSession(): UserProfile | null {
       const u = localStorage.getItem('agritech_session_user');
@@ -76,52 +50,74 @@ export const db = {
 
   crops: {
     async findAll(userId: string): Promise<FarmCrop[]> {
-      const crops = getCollection<FarmCrop>(COLLECTIONS.CROPS);
-      return crops.filter(c => c.userId === userId);
+      const response = await fetch(`${API_BASE}/crops?userId=${userId}`);
+      if (!response.ok) throw new Error('Failed to fetch crops');
+      return await response.json();
     },
     async create(crop: FarmCrop): Promise<FarmCrop> {
-      const crops = getCollection<FarmCrop>(COLLECTIONS.CROPS);
-      crops.push(crop);
-      saveCollection(COLLECTIONS.CROPS, crops);
-      return crop;
+      const response = await fetch(`${API_BASE}/crops`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(crop)
+      });
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
+      }
+      return await response.json();
     },
     async delete(id: string) {
-      let crops = getCollection<FarmCrop>(COLLECTIONS.CROPS);
-      crops = crops.filter(c => c.id !== id);
-      saveCollection(COLLECTIONS.CROPS, crops);
+      const response = await fetch(`${API_BASE}/crops/${id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
+      }
     }
   },
 
   scans: {
     async findAll(userId: string): Promise<DiseaseAnalysis[]> {
-      const scans = getCollection<DiseaseAnalysis>(COLLECTIONS.SCANS);
-      // Sort by timestamp desc
-      return scans.filter(s => s.userId === userId).sort((a, b) => b.timestamp - a.timestamp);
+      const response = await fetch(`${API_BASE}/scans?userId=${userId}`);
+      if (!response.ok) throw new Error('Failed to fetch scans');
+      return await response.json();
     },
     async create(scan: DiseaseAnalysis): Promise<DiseaseAnalysis> {
-      const scans = getCollection<DiseaseAnalysis>(COLLECTIONS.SCANS);
-      scans.push(scan);
-      // Limit to last 50 per user (simulating logic)
-      saveCollection(COLLECTIONS.SCANS, scans);
-      return scan;
+      const response = await fetch(`${API_BASE}/scans`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(scan)
+      });
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
+      }
+      return await response.json();
     }
   },
 
   landReports: {
     async findAll(userId: string): Promise<LandAnalysisResult[]> {
-      const reports = getCollection<LandAnalysisResult>(COLLECTIONS.LAND_REPORTS);
-      return reports.filter(r => r.userId === userId).sort((a, b) => b.timestamp - a.timestamp);
+      const response = await fetch(`${API_BASE}/land-reports?userId=${userId}`);
+      if (!response.ok) throw new Error('Failed to fetch land reports');
+      return await response.json();
     },
     async create(report: LandAnalysisResult): Promise<LandAnalysisResult> {
-      const reports = getCollection<LandAnalysisResult>(COLLECTIONS.LAND_REPORTS);
-      reports.push(report);
-      saveCollection(COLLECTIONS.LAND_REPORTS, reports);
-      return report;
+      const response = await fetch(`${API_BASE}/land-reports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(report)
+      });
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
+      }
+      return await response.json();
     }
   },
   
   clearAll() {
-    localStorage.removeItem(DB_NAME);
     localStorage.removeItem('agritech_session_user');
   }
 };

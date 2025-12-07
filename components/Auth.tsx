@@ -14,7 +14,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Validation State
   const [validated, setValidated] = useState(false);
 
@@ -32,7 +32,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
-    
+
     if (form.checkValidity() === false) {
       e.stopPropagation();
       setValidated(true);
@@ -69,7 +69,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
       e.stopPropagation();
       return;
     }
-    
+
     if (registerData.password !== registerData.confirmPassword) {
       setError(t('auth.error_pass_mismatch'));
       return;
@@ -104,23 +104,33 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center p-3 bg-light">
-      {/* Language Switcher Fixed Top Right */}
-      <div className="position-absolute top-0 end-0 p-3">
-         <div className="btn-group shadow-sm">
-            <button className={`btn btn-sm ${language === 'en' ? 'btn-success' : 'btn-light'}`} onClick={() => setLanguage('en')}>English</button>
-            <button className={`btn btn-sm ${language === 'hi' ? 'btn-success' : 'btn-light'}`} onClick={() => setLanguage('hi')}>हिंदी</button>
-            <button className={`btn btn-sm ${language === 'kn' ? 'btn-success' : 'btn-light'}`} onClick={() => setLanguage('kn')}>ಕನ್ನಡ</button>
-            <button className={`btn btn-sm ${language === 'te' ? 'btn-success' : 'btn-light'}`} onClick={() => setLanguage('te')}>తెలుగు</button>
-         </div>
+    <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center p-3 bg-light">
+      {/* Language Switcher */}
+      <div className="position-absolute top-0 end-0 p-3 z-3 d-none d-md-block">
+        <div className="btn-group shadow-sm">
+          <button className={`btn btn-sm ${language === 'en' ? 'btn-success' : 'btn-light'}`} onClick={() => setLanguage('en')}>English</button>
+          <button className={`btn btn-sm ${language === 'hi' ? 'btn-success' : 'btn-light'}`} onClick={() => setLanguage('hi')}>हिंदी</button>
+          <button className={`btn btn-sm ${language === 'kn' ? 'btn-success' : 'btn-light'}`} onClick={() => setLanguage('kn')}>ಕನ್ನಡ</button>
+          <button className={`btn btn-sm ${language === 'te' ? 'btn-success' : 'btn-light'}`} onClick={() => setLanguage('te')}>తెలుగు</button>
+        </div>
+      </div>
+
+      {/* Mobile Language Switcher (Visible only on small screens) */}
+      <div className="d-md-none w-100 mb-3 d-flex justify-content-center">
+        <div className="btn-group shadow-sm">
+          <button className={`btn btn-sm ${language === 'en' ? 'btn-success' : 'btn-light'}`} onClick={() => setLanguage('en')}>Eng</button>
+          <button className={`btn btn-sm ${language === 'hi' ? 'btn-success' : 'btn-light'}`} onClick={() => setLanguage('hi')}>हिंदी</button>
+          <button className={`btn btn-sm ${language === 'kn' ? 'btn-success' : 'btn-light'}`} onClick={() => setLanguage('kn')}>ಕನ್ನಡ</button>
+          <button className={`btn btn-sm ${language === 'te' ? 'btn-success' : 'btn-light'}`} onClick={() => setLanguage('te')}>తెలుగు</button>
+        </div>
       </div>
 
       <div className="card border-0 shadow-lg overflow-hidden w-100 animate-fade-in" style={{ maxWidth: '900px', borderRadius: '1.5rem' }}>
         <div className="row g-0">
-          
+
           {/* Left Side - Brand / Info */}
           <div className="col-md-5 bg-dark text-white p-5 d-flex flex-column justify-content-between position-relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #15803d 0%, #1c1917 100%)' }}>
-            
+
             <div className="position-relative z-1">
               <div className="d-flex align-items-center gap-3 mb-5">
                 <div className="bg-white bg-opacity-25 p-2 rounded-3">
@@ -152,16 +162,16 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
             {isLogin ? (
               <div className="mx-auto w-100" style={{ maxWidth: '400px' }}>
                 <h3 className="h4 fw-bold text-dark mb-2">{t('auth.login')}</h3>
-                
+
                 <form onSubmit={handleLogin} noValidate className={`d-flex flex-column gap-3 needs-validation ${validated ? 'was-validated' : ''}`}>
                   <div>
                     <label className="form-label small fw-bold text-secondary mb-1">{t('auth.phone')}</label>
                     <div className="input-group has-validation">
                       <span className="input-group-text bg-light border-end-0"><Phone size={18} className="text-muted" /></span>
-                      <input 
+                      <input
                         type="tel"
                         value={loginData.phone}
-                        onChange={(e) => setLoginData({...loginData, phone: e.target.value})}
+                        onChange={(e) => setLoginData({ ...loginData, phone: e.target.value })}
                         className="form-control border-start-0 ps-1"
                         placeholder="e.g. 9876543210"
                         required
@@ -174,20 +184,20 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                     <label className="form-label small fw-bold text-secondary mb-1">{t('auth.password')}</label>
                     <div className="input-group has-validation">
                       <span className="input-group-text bg-light border-end-0"><Lock size={18} className="text-muted" /></span>
-                      <input 
+                      <input
                         type="password"
                         value={loginData.password}
-                        onChange={(e) => setLoginData({...loginData, password: e.target.value})}
+                        onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                         className="form-control border-start-0 ps-1"
                         placeholder="••••••••"
                         required
                         minLength={6}
                       />
-                       <div className="invalid-feedback">Password must be at least 6 characters.</div>
+                      <div className="invalid-feedback">Password must be at least 6 characters.</div>
                     </div>
                   </div>
-                  
-                  <button 
+
+                  <button
                     type="submit"
                     disabled={isLoading}
                     className="btn btn-dark w-100 py-3 rounded-3 shadow d-flex align-items-center justify-content-center gap-2 mt-2"
@@ -199,7 +209,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                 <div className="mt-4 text-center">
                   <p className="text-secondary small">
                     {t('auth.noAccount')} {' '}
-                    <button 
+                    <button
                       onClick={() => { setIsLogin(false); setValidated(false); setError(null); }}
                       className="btn btn-link p-0 fw-bold text-success text-decoration-none"
                     >
@@ -216,10 +226,10 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                   <div className="row g-2">
                     <div className="col-6">
                       <label className="form-label small fw-bold text-secondary mb-1">{t('auth.name')}</label>
-                      <input 
+                      <input
                         type="text"
                         value={registerData.name}
-                        onChange={(e) => setRegisterData({...registerData, name: e.target.value})}
+                        onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
                         className="form-control"
                         required
                         minLength={2}
@@ -227,10 +237,10 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                     </div>
                     <div className="col-6">
                       <label className="form-label small fw-bold text-secondary mb-1">{t('auth.phone')}</label>
-                      <input 
+                      <input
                         type="tel"
                         value={registerData.phone}
-                        onChange={(e) => setRegisterData({...registerData, phone: e.target.value})}
+                        onChange={(e) => setRegisterData({ ...registerData, phone: e.target.value })}
                         className="form-control"
                         required
                         pattern="[0-9]{10}"
@@ -239,34 +249,34 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                   </div>
 
                   <div>
-                     <label className="form-label small fw-bold text-secondary mb-1">{t('auth.location')}</label>
-                     <input 
-                        type="text"
-                        value={registerData.location}
-                        onChange={(e) => setRegisterData({...registerData, location: e.target.value})}
-                        className="form-control"
-                        required
-                      />
+                    <label className="form-label small fw-bold text-secondary mb-1">{t('auth.location')}</label>
+                    <input
+                      type="text"
+                      value={registerData.location}
+                      onChange={(e) => setRegisterData({ ...registerData, location: e.target.value })}
+                      className="form-control"
+                      required
+                    />
                   </div>
 
                   <div>
-                     <label className="form-label small fw-bold text-secondary mb-1">{t('auth.farmSize')}</label>
-                     <input 
-                        type="text"
-                        value={registerData.farmSize}
-                        onChange={(e) => setRegisterData({...registerData, farmSize: e.target.value})}
-                        className="form-control"
-                        required
-                      />
+                    <label className="form-label small fw-bold text-secondary mb-1">{t('auth.farmSize')}</label>
+                    <input
+                      type="text"
+                      value={registerData.farmSize}
+                      onChange={(e) => setRegisterData({ ...registerData, farmSize: e.target.value })}
+                      className="form-control"
+                      required
+                    />
                   </div>
 
                   <div className="row g-2">
                     <div className="col-6">
                       <label className="form-label small fw-bold text-secondary mb-1">{t('auth.password')}</label>
-                      <input 
+                      <input
                         type="password"
                         value={registerData.password}
-                        onChange={(e) => setRegisterData({...registerData, password: e.target.value})}
+                        onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
                         className="form-control"
                         required
                         minLength={6}
@@ -274,10 +284,10 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                     </div>
                     <div className="col-6">
                       <label className="form-label small fw-bold text-secondary mb-1">{t('auth.confirmPassword')}</label>
-                      <input 
+                      <input
                         type="password"
                         value={registerData.confirmPassword}
-                        onChange={(e) => setRegisterData({...registerData, confirmPassword: e.target.value})}
+                        onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
                         className="form-control"
                         required
                         minLength={6}
@@ -285,7 +295,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                     </div>
                   </div>
 
-                  <button 
+                  <button
                     type="submit"
                     disabled={isLoading}
                     className="btn btn-success w-100 py-3 rounded-3 mt-2 shadow d-flex align-items-center justify-content-center gap-2"
@@ -297,7 +307,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                 <div className="mt-4 text-center">
                   <p className="text-secondary small">
                     {t('auth.hasAccount')} {' '}
-                    <button 
+                    <button
                       onClick={() => { setIsLogin(true); setValidated(false); setError(null); }}
                       className="btn btn-link p-0 fw-bold text-success text-decoration-none"
                     >
