@@ -10,7 +10,8 @@
     "recharts": "^2.12.7",
     "react-markdown": "^9.0.1",
     "@google/generative-ai": "^0.17.0",
-    "gsap": "^3.12.5"
+    "gsap": "^3.12.5",
+    "express": "^4.19.2"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
@@ -22,20 +23,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "start": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "start": "node server.js"
   }
 }
