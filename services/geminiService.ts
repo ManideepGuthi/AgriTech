@@ -11,17 +11,19 @@ import {
 
 // Models to try in order of preference
 const MODELS = [
-  "gemini-2.0-flash",               // Primary
-  "gemini-2.0-flash-lite-preview-02-05", // Secondary
-  "gemini-2.0-flash-exp",           // Experimental fallback
+  "gemini-1.5-flash",
+  "gemini-1.5-flash-latest",
+  "gemini-1.5-flash-001",
+  "gemini-2.0-flash-exp",
+  "gemini-2.0-flash",
+  "gemini-1.5-pro",
+  "gemini-pro",
 ];
 
 const getAiClient = () => {
   const apiKey = import.meta.env.VITE_API_KEY;
   if (!apiKey) {
     console.error("VITE_API_KEY is missing/empty in .env");
-    // Throwing here might crash the app on load if called early.
-    // Instead return a client with a placeholder that will fail only on request.
     return new GoogleGenerativeAI("missing_api_key");
   }
   return new GoogleGenerativeAI(apiKey);
@@ -64,18 +66,19 @@ async function makeModelRequest<T>(
 
     } catch (error: any) {
       lastError = error;
-      const isRateLimit = error.message?.includes('429') || error.status === 429;
-      const isQuotaExceeded = error.message?.includes('403') || error.status === 403;
-      const isOverloaded = error.message?.includes('503') || error.status === 503;
-      const isNotFound = error.message?.includes('404') || error.status === 404;
+      const status = error.status || 'Unknown Status';
+      const msg = error.message || 'Unknown Error';
+
+      const isRateLimit = msg.includes('429') || status === 429;
+      const isQuotaExceeded = msg.includes('403') || status === 403;
+      const isOverloaded = msg.includes('503') || status === 503;
+      const isNotFound = msg.includes('404') || status === 404;
 
       if (isRateLimit || isQuotaExceeded || isOverloaded || isNotFound) {
-        console.warn(`Model ${modelName} failed (${error.status || 'Error'}). Trying next...`);
-        continue; // Try next model immediately without waiting
+        console.warn(`Model ${modelName} failed (${status}). Msg: ${msg}. Trying next...`);
+        continue;
       }
 
-      // If it's a parsing error or other fatal error, stop trying other models if they'd likely fail too, 
-      // but for now, let's assume it's model-specific and try getting a better result.
       console.error(`Model ${modelName} general error:`, error);
       continue;
     }
@@ -95,30 +98,156 @@ async function makeModelRequest<T>(
 
 // --- Exported API Functions ---
 
+// Helper to convert base64 to Blob for FormData
+const base64ToBlob = (base64: string): Blob => {
+  const byteString = atob(base64.split(',')[1]);
+  const mimeString = base64.split(',')[0].split(':')[1].split(';')[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: mimeString });
+};
+
 export const analyzeCropImage = async (base64Image: string, lang: Language = 'en'): Promise<DiseaseAnalysis> => {
   const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");
+  let customDiagnosis: string | null = null;
+  let customConfidence: number = 0;
 
-  const prompt = `Analyze this millet crop image. Detect disease. Provide response in ${getLangName(lang)} language. Return JSON with: isPlant (boolean), plantName (string), diagnosis (string), confidence (number 0-1), description (string), severity ("Low", "Medium", "High"), interventionPlan (array of {day: string, action: string}), treatment (array of strings), prevention (array of strings).`;
+  // 1. Try Local Python Model
+  try {
+    const formData = new FormData();
+    formData.append('image', base64ToBlob(base64Image));
 
-  return makeModelRequest<DiseaseAnalysis>(
-    [
-      prompt,
-      {
-        inlineData: {
-          mimeType: "image/jpeg",
-          data: cleanBase64,
-        },
-      },
-    ],
-    { ...MOCK_DISEASE_ANALYSIS, timestamp: Date.now() }, // Fallback
-    (text) => {
-      const cleaned = text.replace(/```json\n?|\n?```/g, '').trim();
-      const parsed = JSON.parse(cleaned);
-      parsed.id = Date.now().toString();
-      parsed.timestamp = Date.now();
-      return parsed;
+    console.log("Attempting to connect to Local Python Model...");
+    const localResponse = await fetch('http://localhost:5000/predict', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (localResponse.ok) {
+      const data = await localResponse.json();
+      console.log("Local Model Result:", data);
+
+      if (data.class) {
+        customDiagnosis = data.class;
+        customConfidence = data.confidence || 0.85;
+      }
+    } else {
+      console.warn("Local model returned error:", localResponse.status);
     }
-  );
+  } catch (err) {
+    console.warn("Local Python Model unavailable (using cloud fallback):", err);
+  }
+
+  // 2. Construct Prompt (Hybrid or Fallback)
+  let prompt = "";
+  if (customDiagnosis) {
+    // Hybrid: Local Model gave diagnosis, Gemini gives details
+    prompt = `
+    CONTEXT: A specialized Millet Disease Model has analyzed this image and detected: "${customDiagnosis}".
+    
+    TASK: Provide a detailed report for "${customDiagnosis}" in Millets.
+    
+    OUTPUT: Provide response in ${getLangName(lang)}. Return JSON strictly matching the format below.
+    - Set "diagnosis" to "${customDiagnosis}".
+    - Set "confidence" to ${customConfidence.toFixed(2)}.
+    - Provide "treatment", "prevention", "interventionPlan".
+    - If "${customDiagnosis}" is "Healthy", provide tips for maintaining health.
+    
+    RETURN JSON FORMAT:
+    {
+      "isPlant": true,
+      "plantName": "Millet", 
+      "diagnosis": "${customDiagnosis}", 
+      "confidence": number, 
+      "description": string, 
+      "severity": "Low" | "Medium" | "High", 
+      "interventionPlan": [{ "day": string, "action": string }], 
+      "treatment": [string], 
+      "prevention": [string]
+    }
+    `;
+  } else {
+    // Fallback: Pure Gemini Analysis (Original Prompt Logic)
+    prompt = `
+      IMPORTANT: You are an expert Agricultural AI specializing in Indian Millet crops (Bajra, Jowar, Ragi).
+      
+      TASK: Analyze the provided image and generate a diagosis JSON.
+      
+      STEPS:
+      1. **IS IT A CROP?**: First, strictly determine if the image contains a plant, leaf, crop, or farm field. 
+         - If the image contains random objects (chair, person, car, laptop, generic wall), set "isPlant" to false.
+         - If "isPlant" is false, return the JSON with "description": "No crop or plant detected. Please upload a clear image of a plant leaf or farm." and stop there.
+      
+      2. **CROP IDENTIFICATION**: If it is a plant, check if it is a Millet variety (Pearl Millet/Bajra, Finger Millet/Ragi, Sorghum/Jowar). 
+         - If it is a different plant, note that in "plantName" but proceed with general diagnosis.
+         
+      3. **DISEASE DIAGNOSIS**: Look for specific diseases: Downy Mildew, Blast, Rust, Ergot, Smut, Armyworm.
+         
+      4. **OUTPUT**: Provide the response STRICTLY in ${getLangName(lang)} language.
+      
+      RETURN JSON FORMAT:
+      {
+        "isPlant": boolean,
+        "plantName": string, 
+        "diagnosis": string, 
+        "confidence": number, 
+        "description": string, 
+        "severity": "Low" | "Medium" | "High", 
+        "interventionPlan": [{ "day": string, "action": string }], 
+        "treatment": [string], 
+        "prevention": [string]
+      }
+    `;
+  }
+
+  // 3. Execute Request with Robust Fallback
+  try {
+    return await makeModelRequest<DiseaseAnalysis>(
+      [
+        prompt,
+        {
+          inlineData: {
+            mimeType: "image/jpeg",
+            data: cleanBase64,
+          },
+        },
+      ],
+      { ...MOCK_DISEASE_ANALYSIS, timestamp: Date.now() }, // Default Fallback
+      (text) => {
+        const cleaned = text.replace(/```json\n?|\n?```/g, '').trim();
+        const parsed = JSON.parse(cleaned);
+        parsed.id = Date.now().toString();
+        parsed.timestamp = Date.now();
+        return parsed;
+      }
+    );
+  } catch (apiError) {
+    // If Gemini fails but we have a Local Diagnosis, USE IT!
+    if (customDiagnosis) {
+      console.log("Cloud API failed, but Local Model succeeded. Generating offline report.");
+      return {
+        id: `local-${Date.now()}`,
+        userId: "local-user",
+        timestamp: Date.now(),
+        isPlant: true,
+        plantName: "Millet",
+        diagnosis: customDiagnosis,
+        confidence: customConfidence,
+        description: `Visual analysis detected indicators of ${customDiagnosis}. Cloud detailed analysis is currently unavailable.`,
+        severity: "Medium",
+        interventionPlan: [
+          { day: "Day 1", action: "Isolate affected plants." },
+          { day: "Day 3", action: "Consult local agriculture expert for specific fungicide." }
+        ],
+        treatment: ["Apply appropriate fungicide", "Improve air circulation"],
+        prevention: ["Use resistant seeds", "Maintain proper spacing"]
+      };
+    }
+    throw apiError; // Re-throw if we have nothing
+  }
 };
 
 export const getFarmingAdvice = async (query: string): Promise<string> => {
