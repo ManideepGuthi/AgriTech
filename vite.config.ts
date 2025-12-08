@@ -25,6 +25,13 @@ export default defineConfig({
 
   server: {
     host: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
     allowedHosts: [
       "agritech-ycwe.onrender.com" // your Render domain
     ]

@@ -1,7 +1,7 @@
 
 import { DiseaseAnalysis, FarmCrop, LandAnalysisResult, UserProfile } from "../types";
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = '/api';
 
 export const db = {
   users: {
@@ -116,7 +116,7 @@ export const db = {
       return await response.json();
     }
   },
-  
+
   clearAll() {
     localStorage.removeItem('agritech_session_user');
   }
