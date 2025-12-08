@@ -1,31 +1,29 @@
+
 import { MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
-
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const DB_NAME = 'agritech_db';
+const uri = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-    console.error("MONGODB_URI is not defined in environment variables");
-    process.exit(1);
-}
+async function run() {
+    console.log("Testing connection to:", uri.replace(/:([^:@]+)@/, ':****@')); // Hide password
 
-async function testConnection() {
-    console.log('Attempting to connect to MongoDB...');
-    const client = new MongoClient(MONGODB_URI);
+    const client = new MongoClient(uri, {
+        serverSelectionTimeoutMS: 5000
+    });
 
     try {
+        console.log("Connecting...");
         await client.connect();
-        console.log('Successfully connected to MongoDB!');
-        const db = client.db(DB_NAME);
-        const collections = await db.listCollections().toArray();
-        console.log('Collections:', collections.map(c => c.name));
-    } catch (error) {
-        console.error('Connection failed:', error);
+        console.log("Connected successfully to server");
+        await client.db("admin").command({ ping: 1 });
+        console.log("Ping confirmed.");
+    } catch (err) {
+        console.error("Connection failed!");
+        console.error(err);
     } finally {
         await client.close();
     }
 }
 
-testConnection();
+run();

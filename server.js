@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { MongoClient } from 'mongodb';
+import { MongoClient, ServerApiVersion } from 'mongodb';
 import path from "path";
 import dotenv from "dotenv";
 
@@ -21,17 +21,29 @@ let client;
 let db;
 
 const connectDB = async () => {
-  if (db) return; // Already connected
+  if (db && client) return;
 
   try {
     if (!client) {
-      client = new MongoClient(MONGODB_URI);
+      client = new MongoClient(MONGODB_URI, {
+        serverApi: {
+          version: ServerApiVersion.v1,
+          strict: true,
+          deprecationErrors: true,
+        }
+      });
       await client.connect();
       console.log("Connected to MongoDB");
     }
     db = client.db(DB_NAME);
   } catch (error) {
     console.error("Failed to connect to MongoDB", error);
+    // Reset client on error to allow retry
+    if (client) {
+      await client.close().catch(() => { });
+      client = null;
+    }
+    db = null;
     throw error;
   }
 };
