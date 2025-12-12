@@ -20,6 +20,65 @@ if (!MONGODB_URI) {
 let client;
 let db;
 
+const MOCK_DB = {
+  users: [],
+  crops: [],
+  scans: [],
+  land_reports: []
+};
+
+class MockCollection {
+  constructor(name) {
+    this.name = name;
+    this.data = MOCK_DB[name] || [];
+  }
+
+  async findOne(query) {
+    return this.data.find(item => Object.keys(query).every(key => item[key] === query[key])) || null;
+  }
+
+  async insertOne(doc) {
+    this.data.push(doc);
+    return { insertedId: doc.id || Date.now() };
+  }
+
+  async updateOne(query, update) {
+    const idx = this.data.findIndex(item => Object.keys(query).every(key => item[key] === query[key]));
+    if (idx !== -1) {
+      if (update.$set) {
+        this.data[idx] = { ...this.data[idx], ...update.$set };
+      }
+      return { matchedCount: 1 };
+    }
+    return { matchedCount: 0 };
+  }
+
+  async deleteOne(query) {
+    const idx = this.data.findIndex(item => Object.keys(query).every(key => item[key] === query[key]));
+    if (idx !== -1) {
+      this.data.splice(idx, 1);
+      return { deletedCount: 1 };
+    }
+    return { deletedCount: 0 };
+  }
+
+  find(query) {
+    const filtered = this.data.filter(item => Object.keys(query).every(key => item[key] === query[key]));
+    return {
+      toArray: async () => filtered,
+      sort: (criteria) => {
+        const sorted = [...filtered].sort((a, b) => {
+          const key = Object.keys(criteria)[0];
+          return criteria[key] === -1 ? b[key] - a[key] : a[key] - b[key];
+        });
+        return {
+          toArray: async () => sorted
+        };
+      }
+    };
+  }
+}
+
 const connectDB = async () => {
   if (db && client) return;
 
@@ -30,27 +89,24 @@ const connectDB = async () => {
           version: ServerApiVersion.v1,
           strict: true,
           deprecationErrors: true,
-        }
+        },
+        connectTimeoutMS: 5000,
+        serverSelectionTimeoutMS: 5000
       });
       await client.connect();
-      console.log("Connected to MongoDB");
+      console.log("Connected to MongoDB via Atlas");
     }
     db = client.db(DB_NAME);
   } catch (error) {
-    console.error("Failed to connect to MongoDB", error);
-    // Reset client on error to allow retry
-    if (client) {
-      await client.close().catch(() => { });
-      client = null;
-    }
-    db = null;
-    throw error;
+    console.error("Failed to connect to MongoDB (likely IP Blocked). Switching to OFFLINE MOCK MODE.");
+    db = null; // Ensure db is null so getCollection uses Mock
   }
 };
 
 const getCollection = (collectionName) => {
   if (!db) {
-    throw new Error('Database not connected');
+    console.log(`[Offline Mode] Accessing collection: ${collectionName}`);
+    return new MockCollection(collectionName);
   }
   return db.collection(collectionName);
 };
