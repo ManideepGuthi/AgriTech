@@ -1,0 +1,41 @@
+{
+  "name": "agrivision-ai",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@google/generative-ai": "^0.17.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.19.2",
+    "groq-sdk": "^0.37.0",
+    "gsap": "^3.12.5",
+    "lucide-react": "^0.378.0",
+    "mongodb": "^7.0.0",
+    "openai": "^6.10.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-markdown": "^9.0.1",
+    "recharts": "^2.12.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0"
+  },
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "client": "vite",
+    "server": "nodemon --exec \"tsx --require dotenv/config --experimental-specifier-resolution=node server.js\"",
+    "server:py": "python model_server.py",
+    "build": "tsc && vite build",
+    "start": "node dist/server.js"
+  }
+}

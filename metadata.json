@@ -1,0 +1,9 @@
+{
+  "name": "AgriTech",
+  "description": "An intelligent assistant for farmers providing crop disease detection, land analysis, and personalized farming advice using Gemini AI.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
