@@ -29,8 +29,10 @@
     "outDir": "dist"
   },
   "include": [
-    "src",
-    "api"
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx"
   ],
   "ts-node": {
     "esm": true,
