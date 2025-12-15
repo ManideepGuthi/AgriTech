@@ -23,7 +23,8 @@ export const db = {
     async findOne(phone: string): Promise<UserProfile | null> {
       const response = await fetch(`${API_BASE}/users?phone=${phone}`);
       if (!response.ok) throw new Error('Failed to fetch user');
-      return await response.json();
+      const data = await response.json();
+      return data.user;
     },
     async update(user: UserProfile): Promise<UserProfile> {
       const response = await fetch(`${API_BASE}/users/${user.id}`, {

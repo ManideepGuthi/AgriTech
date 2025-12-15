@@ -7,9 +7,8 @@ export default (getCollection) => {
   router.get('/', async (req, res) => {
     try {
       const { userId } = req.query;
-      const userIdNum = parseInt(userId);
       const collection = getCollection('land_reports');
-      const reports = await collection.find({ userId: userIdNum }).toArray();
+      const reports = await collection.find({ userId }).toArray();
       res.json(reports);
     } catch (error) {
       res.status(500).send(error.message);
