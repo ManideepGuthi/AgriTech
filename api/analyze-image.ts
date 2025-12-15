@@ -22,23 +22,38 @@ router.post("/", async (req: Request, res: Response) => {
     // Ensure image is data url
     const imageUrl = image.startsWith("data:image") ? image : `data:image/jpeg;base64,${image}`;
 
-    const prompt = `Analyze this crop image. Identify any diseases or pests. 
-    If healthy, say "Healthy Crop".
-    Provide a diagnosis and confidence level.
+    const prompt = `Analyze this image carefully. You are an expert plant pathologist.
+    
+    Step 1: Determine if the image contains a plant, crop, leaf, or agricultural scene.
+    - If NO (e.g., airplane, car, person only, building, random object): Return "isPlant": false.
+    - If YES: Return "isPlant": true and proceed to Step 2.
+
+    Step 2 (Only if isPlant is true):
+    - Identify the specific plant name.
+    - Diagnose any disease, pest, or deficiency.
+    - If the plant looks healthy, diagnose as "Healthy Crop".
+    - Provide a detailed list of symptoms observed.
+    - Recommend practical treatments and preventive measures.
+    - Create a short intervention plan.
+
     Respond ONLY in ${lang}.
-    Return a STRICT JSON object:
+    
+    Return a STRICT JSON object with this structure:
     {
-      "diagnosis": "Disease Name or Healthy Crop",
+      "isPlant": boolean,
+      "diagnosis": "Disease Name or Healthy Crop (if isPlant is true) OR 'Not a crop' (if isPlant is false)",
       "confidence": number (0-1),
+      "plantName": "Name of the plant (or 'Unknown' if not a plant)",
+      "description": "Brief explanation of findings",
       "symptoms": ["symptom1", "symptom2"],
       "treatment": ["treatment1", "treatment2"],
       "prevention": ["prevention1", "prevention2"],
-      "interventionPlan": [{ "day": "Day 1", "action": "action description" }, { "day": "Day 3", "action": "follow up" }]
+      "interventionPlan": [{ "day": "Day 1", "action": "action description" }]
     }`;
 
     const groq = getGroqClient();
     const response = await groq.chat.completions.create({
-      model: "meta-llama/llama-4-scout-17b-16e-instruct",
+      model: "llama-3.2-90b-vision-preview",
       messages: [
         {
           role: "user",

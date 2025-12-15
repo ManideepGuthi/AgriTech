@@ -17,6 +17,7 @@ export const MOCK_DISEASE_ANALYSIS: DiseaseAnalysis = {
         { day: "Day 1", action: "Remove and burn infected plants immediately." },
         { day: "Day 3", action: "Spray Mancozeb 75 WP @ 2.5g/liter water." }
     ],
+    symptoms: ["Chlorosis", "Green ear structures", "Stunted growth"],
     treatment: ["Mancozeb spray", "Crop rotation"],
     prevention: ["Use resistant varieties", "Seed treatment with Apron 35 SD"]
 };

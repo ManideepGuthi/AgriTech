@@ -50,30 +50,8 @@ router.post("/", async (req: Request, res: Response) => {
 
       res.json(schemes);
     } catch (parseError) {
-      console.warn("Failed to parse generated text as JSON, using fallback");
-      const fallback = [
-        {
-          "name": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
-          "benefits": "Provides financial support to farmers in case of crop failure due to natural calamities, pests, and diseases.",
-          "eligibility": "All farmers growing notified crops in notified areas are eligible."
-        },
-        {
-          "name": "National Agriculture Market (eNAM)",
-          "benefits": "Provides a unified national market for agricultural commodities with better price discovery.",
-          "eligibility": "Farmers, traders, and buyers registered on the eNAM platform."
-        },
-        {
-          "name": "Soil Health Card Scheme",
-          "benefits": "Provides soil health cards to farmers with recommendations for soil management.",
-          "eligibility": "All farmers in India."
-        },
-        {
-          "name": "Paramparagat Krishi Vikas Yojana (PKVY)",
-          "benefits": "Promotes organic farming practices and provides financial assistance for organic inputs.",
-          "eligibility": "Farmers interested in organic farming."
-        }
-      ];
-      res.json(fallback);
+      console.warn("Failed to parse generated text as JSON");
+      res.status(500).json({ error: "Failed to fetch government schemes" });
     }
   } catch (err) {
     console.error("Govt Schemes Error:", err);

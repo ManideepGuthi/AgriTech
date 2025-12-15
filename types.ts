@@ -32,6 +32,7 @@ export interface DiseaseAnalysis {
   interventionPlan: { day: string; action: string }[];
   treatment: string[];
   prevention: string[];
+  symptoms: string[];
 }
 
 export interface ChatMessage {

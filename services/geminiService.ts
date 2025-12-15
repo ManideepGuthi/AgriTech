@@ -53,7 +53,10 @@ export const analyzeCropImage = async (
 
     return {
       ...MOCK_DISEASE_ANALYSIS,
+      isPlant: data.isPlant !== undefined ? data.isPlant : true,
       diagnosis: data.diagnosis || "Healthy Crop",
+      plantName: data.plantName || "Crop",
+      description: data.description || "Analysis completed successfully.",
       confidence: data.confidence || 0.8,
       symptoms: data.symptoms || [],
       treatment: data.treatment || [],
@@ -64,7 +67,21 @@ export const analyzeCropImage = async (
     };
   } catch (err) {
     console.error("Image Analysis Error:", err);
-    return { ...MOCK_DISEASE_ANALYSIS, timestamp: Date.now() };
+    return {
+      id: "error-" + Date.now(),
+      userId: "unknown",
+      timestamp: Date.now(),
+      isPlant: true, // Keep true to show the error card, or false to show "not a plant"
+      plantName: "Unknown",
+      diagnosis: "Analysis Failed",
+      confidence: 0,
+      description: "Unable to analyze the image. Please check your internet connection or try again later. (Server/API Error)",
+      severity: "Low",
+      interventionPlan: [],
+      treatment: [],
+      prevention: [],
+      symptoms: []
+    };
   }
 };
 
@@ -94,7 +111,8 @@ async function callBackendAPI<T>(endpoint: string, body?: any): Promise<T> {
 
 export const getFarmingAdvice = async (query: string): Promise<string> => {
   try {
-    return await callBackendAPI<string>("chat", { message: query });
+    const data = await callBackendAPI<{ response: string }>("chat", { message: query });
+    return data.response;
   } catch {
     return MOCK_FARMING_ADVICE;
   }

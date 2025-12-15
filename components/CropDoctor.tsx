@@ -150,9 +150,19 @@ const CropDoctor: React.FC<CropDoctorProps> = ({ onNavigate }) => {
         </div>
 
         {error && (
-          <div className="alert alert-success d-flex align-items-center gap-3 rounded-4" role="alert">
-            <CheckCircle size={20} />
-            <div className="fw-medium">Millet Crop Prediction Successful</div>
+          <div className="alert alert-danger d-flex align-items-center gap-3 rounded-4" role="alert">
+            <XCircle size={20} />
+            <div className="fw-medium">{error}</div>
+          </div>
+        )}
+
+        {result && !result.isPlant && (
+          <div className="alert alert-warning d-flex align-items-center gap-3 rounded-4" role="alert">
+            <AlertCircle size={20} />
+            <div className="fw-medium">
+              This image does not appear to be a crop or agricultural scene. 
+              Please upload a valid crop image for analysis.
+            </div>
           </div>
         )}
 
