@@ -35,5 +35,18 @@ export default defineConfig({
     allowedHosts: [
       "agritech-ycwe.onrender.com" // your Render domain
     ]
+  },
+  build: {
+    chunkSizeWarningLimit: 1000, // Increase warning limit to 1000KB
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          charts: ['recharts'],
+          ui: ['lucide-react', 'gsap'],
+          ai: ['openai', 'react-markdown']
+        }
+      }
+    }
   }
 });

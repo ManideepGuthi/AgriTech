@@ -14,7 +14,19 @@ export const translations = {
       doctor: 'Crop Doctor',
       guide: 'Assistant',
       land: 'Land Check',
+      maps: 'Maps',
+      community: 'Community',
+      market: 'Marketplace',
       profile: 'Profile'
+    },
+    community: {
+      title: 'Farmer Community',
+      share: 'Share your thoughts or ask a question...',
+      post: 'Post',
+      likes: 'Likes',
+      comments: 'Comments',
+      noPosts: 'No posts yet. Be the first to share!',
+      postedBy: 'Posted by'
     },
     auth: {
       welcome: 'Welcome Back!',
@@ -71,6 +83,15 @@ export const translations = {
       score: 'Suitability Score',
       crops: 'Recommended Millets'
     },
+    maps: {
+      title: 'Agricultural Maps',
+      view: 'View Map',
+      features: 'Farmer Features',
+      markets: 'Nearby Markets',
+      soil_centers: 'Soil Testing Centers',
+      weather_stations: 'Weather Stations',
+      storage: 'Cold Storage'
+    },
     profile: {
       info: 'Farmer Information',
       settings: 'App Settings',
@@ -78,7 +99,23 @@ export const translations = {
       save: 'Save Changes',
       edit: 'Edit Profile',
       logout: 'Sign Out',
-      clearData: 'Clear All Data'
+      help: 'Help & Support'
+    },
+    market: {
+      title: 'Marketplace',
+      buy: 'Buy',
+      sell: 'Sell Item',
+      crops: 'Crops',
+      equipment: 'Equipment',
+      price: 'Price',
+      contact: 'Contact Seller',
+      location: 'Location',
+      noItems: 'No items listed yet.',
+      postItem: 'List an Item',
+      itemName: 'Item Name',
+      itemType: 'Item Type',
+      description: 'Description',
+      unit: 'Unit (e.g., kg, hour)'
     }
   },
   hi: {
@@ -93,7 +130,19 @@ export const translations = {
       doctor: 'फसल डॉक्टर',
       guide: 'सहायक',
       land: 'भूमि जाँच',
+      maps: 'नक्शे',
+      community: 'किसान मंच',
+      market: 'बाज़ार',
       profile: 'प्रोफाइल'
+    },
+    community: {
+      title: 'किसान मंच',
+      share: 'अपने विचार साझा करें या प्रश्न पूछें...',
+      post: 'पोस्ट करें',
+      likes: 'पसंद',
+      comments: 'टिप्पणियाँ',
+      noPosts: 'अभी तक कोई पोस्ट नहीं। सबसे पहले साझा करें!',
+      postedBy: 'द्वारा पोस्ट किया गया'
     },
     auth: {
       welcome: 'स्वागत है!',
@@ -150,14 +199,39 @@ export const translations = {
       score: 'उपयुक्तता स्कोर',
       crops: 'अनुशंसित फसलें'
     },
+    maps: {
+      title: 'कृषि मानचित्र',
+      view: 'नक्शा देखें',
+      features: 'किसान सुविधाएँ',
+      markets: 'निकटतम मंडी',
+      soil_centers: 'मिट्टी परीक्षण केंद्र',
+      weather_stations: 'मौसम केंद्र',
+      storage: 'शीत भंडार'
+    },
     profile: {
       info: 'किसान की जानकारी',
       settings: 'ऐप सेटिंग्स',
       language: 'ऐप की भाषा',
       save: 'परिवर्तन सहेजें',
       edit: 'प्रोफाइल संपादित करें',
-      logout: 'लॉग आउट',
-      clearData: 'सभी डेटा साफ़ करें'
+      logout: 'साइन आउट करें',
+      help: 'सहायता'
+    },
+    market: {
+      title: 'बाज़ार',
+      buy: 'खरीदें',
+      sell: 'बेचें',
+      crops: 'फसलें',
+      equipment: 'उपकरण',
+      price: 'कीमत',
+      contact: 'विक्रेता से संपर्क करें',
+      location: 'स्थान',
+      noItems: 'कोई आइटम उपलब्ध नहीं है',
+      postItem: 'आइटम सूची बनाएं',
+      itemName: 'आइटम का नाम',
+      itemType: 'आइटम प्रकार',
+      description: 'विवरण',
+      unit: 'इकाई'
     }
   },
   kn: {
@@ -172,7 +246,19 @@ export const translations = {
       doctor: 'ಬೆಳೆ ವೈದ್ಯ',
       guide: 'ಸಹಾಯಕ',
       land: 'ಭೂಮಿ ಪರೀಕ್ಷೆ',
+      maps: 'ನಕ್ಷೆಗಳು',
+      community: 'ರೈತ ಸಮುದಾಯ',
+      market: 'ಮಾರುಕಟ್ಟೆ',
       profile: 'ಪ್ರೊಫೈಲ್'
+    },
+    community: {
+      title: 'ರೈತ ವೇದಿಕೆ',
+      share: 'ನಿಮ್ಮ ಆಲೋಚನೆಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ...',
+      post: 'ಪೋಸ್ಟ್ ಮಾಡಿ',
+      likes: 'ಇಷ್ಟಗಳು',
+      comments: 'ಕಾಮೆಂಟ್‌ಗಳು',
+      noPosts: 'ಇನ್ನೂ ಯಾವುದೇ ಪೋಸ್ಟ್‌ಗಳಿಲ್ಲ.',
+      postedBy: 'ಪೋಸ್ಟ್ ಮಾಡಿದವರು'
     },
     auth: {
       welcome: 'ಸ್ವಾಗತ!',
@@ -234,9 +320,25 @@ export const translations = {
       settings: 'ಅಪ್ಲಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು',
       language: 'ಭಾಷೆ',
       save: 'ಉಳಿಸಿ',
-      edit: 'ತಿದ್ದುಪಡಿ ಮಾಡಿ',
-      logout: 'ಹೊರಗುಳಿಯಿರಿ',
-      clearData: 'ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ'
+      edit: 'ಪ್ರೊಫೈಲ್ ತಿದ್ದು',
+      logout: 'ಹೊರಬನ್ನಿ',
+      help: 'ಸಹಾಯ'
+    },
+    market: {
+      title: 'Marketplace',
+      buy: 'Buy',
+      sell: 'Sell Item',
+      crops: 'Crops',
+      equipment: 'Equipment',
+      price: 'Price',
+      contact: 'Contact Seller',
+      location: 'Location',
+      noItems: 'No items listed yet.',
+      postItem: 'List an Item',
+      itemName: 'Item Name',
+      itemType: 'Item Type',
+      description: 'Description',
+      unit: 'Unit (e.g., kg, hour)'
     }
   },
   te: {
@@ -251,7 +353,19 @@ export const translations = {
       doctor: 'పంట డాక్టర్',
       guide: 'సహాయకుడు',
       land: 'భూమి పరీక్ష',
+      maps: 'మ్యాప్స్',
+      community: 'రైతు వేదిక',
+      market: 'మార్కెట్',
       profile: 'ప్రొఫైల్'
+    },
+    community: {
+      title: 'రైతు వేదిక',
+      share: 'మీ ఆలోచనలను పంచుకోండి...',
+      post: 'పోస్ట్ చేయండి',
+      likes: 'ఇష్టాలు',
+      comments: 'వ్యాఖ్యలు',
+      noPosts: 'ఇంకా పోస్ట్‌లు లేవు.',
+      postedBy: 'పోస్ట్ చేసినవారు'
     },
     auth: {
       welcome: 'స్వాగతం!',
@@ -313,9 +427,25 @@ export const translations = {
       settings: 'యాప్ సెట్టింగ్‌లు',
       language: 'భాష',
       save: 'సేవ్ చేయండి',
-      edit: 'సవరించండి',
-      logout: 'లాగౌట్',
-      clearData: 'మొత్తం డేటాను క్లియర్ చేయండి'
+      edit: 'ప్రొఫైల్ సవరించండి',
+      logout: 'సైన్ అవుట్',
+      help: 'సహాయం'
+    },
+    market: {
+      title: 'Marketplace',
+      buy: 'Buy',
+      sell: 'Sell Item',
+      crops: 'Crops',
+      equipment: 'Equipment',
+      price: 'Price',
+      contact: 'Contact Seller',
+      location: 'Location',
+      noItems: 'No items listed yet.',
+      postItem: 'List an Item',
+      itemName: 'Item Name',
+      itemType: 'Item Type',
+      description: 'Description',
+      unit: 'Unit (e.g., kg, hour)'
     }
   }
 };

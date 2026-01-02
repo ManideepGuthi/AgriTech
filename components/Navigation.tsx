@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LayoutDashboard, Stethoscope, Sprout, Map, User } from 'lucide-react';
+import { LayoutDashboard, Stethoscope, Sprout, Map, User, Ruler, Users, ShoppingBag } from 'lucide-react';
 import { View } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -16,7 +16,10 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onNavigate }) => {
     { view: View.DASHBOARD, label: t('nav.dashboard'), icon: LayoutDashboard },
     { view: View.DOCTOR, label: t('nav.doctor'), icon: Stethoscope },
     { view: View.GUIDE, label: t('nav.guide'), icon: Sprout },
-    { view: View.LAND, label: t('nav.land'), icon: Map },
+    { view: View.LAND, label: t('nav.land'), icon: Ruler },
+    { view: View.MAPS, label: t('nav.maps'), icon: Map },
+    { view: View.MARKET, label: t('nav.market'), icon: ShoppingBag },
+    { view: View.COMMUNITY, label: t('nav.community'), icon: Users },
     { view: View.PROFILE, label: t('nav.profile'), icon: User },
   ];
 

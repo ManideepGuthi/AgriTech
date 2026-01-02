@@ -4,7 +4,25 @@ export enum View {
   DOCTOR = 'DOCTOR',
   GUIDE = 'GUIDE',
   LAND = 'LAND',
+  MAPS = 'MAPS',
+  COMMUNITY = 'COMMUNITY',
+  MARKET = 'MARKET',
   PROFILE = 'PROFILE',
+}
+
+export interface MarketItem {
+  id: string;
+  sellerId: string;
+  sellerName: string;
+  type: 'CROP' | 'EQUIPMENT' | 'SERVICE';
+  name: string;
+  price: number;
+  unit: string;
+  location: string;
+  description: string;
+  contact: string;
+  image?: string;
+  timestamp: number;
 }
 
 export type Language = 'en' | 'hi' | 'kn' | 'te';
@@ -96,4 +114,15 @@ export interface GovtScheme {
 
 export interface NavigationContext {
   initialQuery?: string;
+}
+
+export interface Post {
+  id: string;
+  author: string; // Name of the author
+  userId: string; // ID of the author
+  content: string;
+  likes: number;
+  comments: number;
+  timestamp: number;
+  likedBy: string[]; // Array of user IDs who liked the post
 }

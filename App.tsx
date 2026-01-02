@@ -5,6 +5,9 @@ import Dashboard from './components/Dashboard';
 import CropDoctor from './components/CropDoctor';
 import CropGuide from './components/CropGuide';
 import LandAnalysis from './components/LandAnalysis';
+import Maps from './components/Maps';
+import Community from './components/Community';
+import Marketplace from './components/Marketplace';
 import Auth from './components/Auth';
 import Profile from './components/Profile';
 import { View, NavigationContext, UserProfile } from './types';
@@ -57,6 +60,9 @@ const AppContent: React.FC = () => {
       case View.DOCTOR: return <CropDoctor onNavigate={handleNavigate} />;
       case View.GUIDE: return <CropGuide initialData={viewData} />;
       case View.LAND: return <LandAnalysis />;
+      case View.MAPS: return <Maps />;
+      case View.MARKET: return <Marketplace />;
+      case View.COMMUNITY: return <Community />;
       case View.PROFILE: return <Profile user={user} onUpdate={setUser} onLogout={handleLogout} />;
       default: return <Dashboard onNavigate={handleNavigate} />;
     }
